@@ -15,6 +15,7 @@ Lookup for the closest to Earth NEO completed in 0.092 seconds
 Total number of NEOs: 18658
 -----------------------------------------------------
 Largest NEO:
+```
 {
   "links" : {
     "self" : "https://api.nasa.gov/neo/rest/v1/neo/2001036?api_key=HlgpL20gLFA8s5FiCQjD9Vv4bmxvm9gaQ2Av1M7C"
@@ -32,8 +33,10 @@ Largest NEO:
   "close_approach_data" : [ ],
   "is_potentially_hazardous_asteroid" : false
 }
+```
 -----------------------------------------------------
 Closest NEO:
+```
 {
   "links" : {
     "self" : "https://api.nasa.gov/neo/rest/v1/neo/3803910?api_key=nkyGvNDnBXs7XoGU1R85FdNxq0LR6vXntVkOdzNm"
@@ -61,6 +64,7 @@ Closest NEO:
   } ],
   "is_potentially_hazardous_asteroid" : false
 }
+```
 -----------------------------------------------------
 
 Process finished with exit code 0
