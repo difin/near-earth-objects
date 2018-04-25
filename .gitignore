@@ -1,0 +1,12 @@
+.classpath
+.settings
+.project
+classes
+*~
+*.eml
+.idea/
+*.iml
+test-output/
+target
+logs
+.git_pull_timestamp
