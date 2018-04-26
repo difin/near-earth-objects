@@ -20,7 +20,7 @@ mvn clean install
 mvn test
 ```
 
-## How to Run
+## How to Run the Application from Command Line
 
 cd target
 java -jar near-earth-objects-1.0-SNAPSHOT-jar-with-dependencies.jar
