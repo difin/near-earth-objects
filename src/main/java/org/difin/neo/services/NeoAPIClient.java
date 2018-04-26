@@ -2,6 +2,7 @@ package org.difin.neo.services;
 
 import org.difin.neo.model.api.NeoPage;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class NeoAPIClient {
 
     private static final String NEO_BROWSE_URL = "https://api.nasa.gov/neo/rest/v1/neo/browse";
-    private static final List<String> apiKeys;
+    private static List<String> apiKeys;
+    private static int counter = 0;
 
     private RestTemplate restTemplate;
 
@@ -29,8 +31,18 @@ public class NeoAPIClient {
                         "MDOiN7IKR0sVk8oHAOqoXR9cAHudIgMWTEPkP9ma",
                         "mpyIo4YueQ9Dh38SaRdpkCT7xkeRt5Rq3hoNmlO4",
                         "nkyGvNDnBXs7XoGU1R85FdNxq0LR6vXntVkOdzNm",
-                        "aGsFY0R8RY4aYIpUVQ5bm8XyfyiXSB7yDcLz52xO"
-                        ));
+                        "aGsFY0R8RY4aYIpUVQ5bm8XyfyiXSB7yDcLz52xO",
+                        "tPE51FOQnv8QDh16bsj1ajQhBnjB3rax9FzPLTSC",
+                        "h54YYD0VxnQrJtDslf4zq85JLNqa5Mra2gMNGEGz",
+                        "Uabm4LPWCjSdV9GRq3xGjTUGcBk0yY3W2xylGcEg",
+                        "JgkCbay9IRgv1NWORCkiArt0BR3jyz1qr4bHuKA6",
+                        "pczRN95VyXgAmG4IQ1QzoNM89Ar3SUgFdaXVvRbn",
+                        "LzjELfdkbgdbsvQJrz7XQDHBXQVQayXCR5j0FMMg",
+                        "ESxIQ9DM6K8mcNhEsA099VYwIBRZ96nlbHMhnv6H",
+                        "p58xxYDM5BKkcoZ46LW0RT7urs9WeoAU4gfSO5Cc",
+                        "svZ9b9IgYVeOpxEoWV4CbemDsuxIQAyvv2lnQD72",
+                        "ZMcfB20GqiemQ5PmnXFWtSHqKUgMDTc3wqDDoUYO"
+                ));
     }
 
     public NeoAPIClient(){
@@ -39,9 +51,21 @@ public class NeoAPIClient {
 
     public NeoPage getBrowsePage(int page) {
 
-        String url = NEO_BROWSE_URL + "?api_key=" + getRandomApiKey() + "&page=" + page;
+        String apiKey = getRandomApiKey();
+        String url = NEO_BROWSE_URL + "?api_key=" + apiKey + "&page=" + page;
 
-        return restTemplate.getForObject(url, NeoPage.class);
+        try{
+            return restTemplate.getForObject(url, NeoPage.class);
+
+        } catch(HttpClientErrorException e){
+
+            synchronized (apiKeys){
+                apiKeys.remove(apiKey);
+                System.out.println("API Key removed");
+            }
+
+            return getBrowsePage(page);
+        }
     }
 
     public int getNumberOfBrowsePages() {
@@ -51,7 +75,14 @@ public class NeoAPIClient {
 
     private String getRandomApiKey(){
 
-        int index = ThreadLocalRandom.current().nextInt(0, apiKeys.size());
-        return apiKeys.get(index);
+        synchronized (apiKeys){
+
+            counter++;
+            int index = ThreadLocalRandom.current().nextInt(0, apiKeys.size());
+
+            System.out.println("API Key number = " + index + ";\tAPI calls count = " + counter + ";\tRemaining API Keys = " + apiKeys.size());
+
+            return apiKeys.get(index);
+        }
     }
 }
