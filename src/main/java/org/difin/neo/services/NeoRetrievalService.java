@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,24 +57,13 @@ public class NeoRetrievalService {
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(THREADS);
 
-        List<Neo> neoList = null;
-        try {
-
-            neoList = forkJoinPool.submit(() ->
+        List<Neo> neoList =
                 IntStream
                     .rangeClosed(0, numberOfPages)
                     .parallel()
                     .mapToObj(i -> neoAPIClient.getBrowsePage(i))
                     .flatMap(p -> p.getNear_earth_objects().stream())
-                    .collect(Collectors.toList())).get();
-
-        } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "Failed getting NEO data", e);
-            throw new RuntimeException(e.getMessage());
-        } catch (ExecutionException e) {
-            logger.log(Level.SEVERE, "Failed getting NEO data", e);
-            throw new RuntimeException(e.getMessage());
-        }
+                    .collect(Collectors.toList());
 
         logger.log(Level.INFO, "Retrieval of all NEOs completed\n");
 
