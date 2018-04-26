@@ -64,6 +64,13 @@ public class NeoAPIClient {
 
             synchronized (apiKeys){
                 apiKeys.remove(apiKey);
+
+                try {
+                    sleep(5000);
+                } catch (InterruptedException e1) {
+                    throw new RuntimeException(e1);
+                }
+
                 System.out.println("API Key removed");
             }
 
@@ -73,7 +80,7 @@ public class NeoAPIClient {
             try {
                 sleep(1000);
             } catch (InterruptedException e1) {
-                throw new RuntimeException(e1.getCause());
+                throw new RuntimeException(e1);
             }
 
             return getBrowsePage(page);
