@@ -23,7 +23,8 @@ mvn clean install
 ```
 
 ## How to Run Unit Tests
-Unit tests are executed as part of build command above, but can be run separately (after build) as following:
+- #### Due to time constraints unit tests fully cover the core functionality, but are missing for less important services
+- Unit tests are executed as part of build command above, but can be run separately (after build) as following:
 ```
 mvn test
 ```
