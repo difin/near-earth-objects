@@ -3,12 +3,15 @@ package org.difin.neo.services;
 import org.difin.neo.model.api.NeoPage;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static java.lang.Thread.sleep;
 
 @Component
 public class NeoAPIClient {
@@ -62,6 +65,15 @@ public class NeoAPIClient {
             synchronized (apiKeys){
                 apiKeys.remove(apiKey);
                 System.out.println("API Key removed");
+            }
+
+            return getBrowsePage(page);
+        } catch (ResourceAccessException e){
+
+            try {
+                sleep(1000);
+            } catch (InterruptedException e1) {
+                throw new RuntimeException(e1.getCause());
             }
 
             return getBrowsePage(page);
