@@ -35,23 +35,29 @@ java -jar near-earth-objects-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 ## Sample output
 ```
-Starting retrieval of all NEOs
-Retrieval of all NEOs completed in 152.147 seconds
+Apr 26, 2018 3:42:42 AM org.difin.neo.services.NeoRetrievalService getNeos
+INFO: Starting retrieval of all NEOs, please wait...
+Apr 26, 2018 3:44:53 AM org.difin.neo.services.NeoRetrievalService getNeos
+INFO: Retrieval of all NEOs completed
 
+Apr 26, 2018 3:44:53 AM org.difin.neo.services.NeoRetrievalService findLargestNeo
+INFO: 
 Starting to look for the largest NEO
-Lookup for the largest NEO completed in 0.04 seconds
+Apr 26, 2018 3:44:53 AM org.difin.neo.services.NeoRetrievalService findLargestNeo
+INFO: Lookup for the largest NEO completed
 
-Starting to look for the closest to Earth NEO
-Lookup for the closest to Earth NEO completed in 0.092 seconds
+Apr 26, 2018 3:44:53 AM org.difin.neo.services.NeoRetrievalService findClosestToEarthNeo
+INFO: Starting to look for the closest to Earth NEO
+Apr 26, 2018 3:44:57 AM org.difin.neo.services.NeoRetrievalService findClosestToEarthNeo
+INFO: Lookup for the closest to Earth NEO completed
 
+-----------------------------------------------------
 Total number of NEOs: 18658
-```
-
-### Largest NEO:
-```
+-----------------------------------------------------
+Largest NEO:
 {
   "links" : {
-    "self" : "https://api.nasa.gov/neo/rest/v1/neo/2001036?api_key=luS7fvF5WXLnsDEhQqW7NrOgg48ZvhISAPf7cZN5"
+    "self" : "https://api.nasa.gov/neo/rest/v1/neo/2001036?api_key=nkyGvNDnBXs7XoGU1R85FdNxq0LR6vXntVkOdzNm"
   },
   "neo_reference_id" : "2001036",
   "name" : "1036 Ganymed (1924 TD)",
@@ -206,13 +212,11 @@ Total number of NEOs: 18658
   } ],
   "is_potentially_hazardous_asteroid" : false
 }
-```
 -----------------------------------------------------
-### Closest NEO:
-```
+Closest NEO:
 {
   "links" : {
-    "self" : "https://api.nasa.gov/neo/rest/v1/neo/3803910?api_key=nkyGvNDnBXs7XoGU1R85FdNxq0LR6vXntVkOdzNm"
+    "self" : "https://api.nasa.gov/neo/rest/v1/neo/3803910?api_key=HlgpL20gLFA8s5FiCQjD9Vv4bmxvm9gaQ2Av1M7C"
   },
   "neo_reference_id" : "3803910",
   "name" : "(2018 HP)",
@@ -237,8 +241,5 @@ Total number of NEOs: 18658
   } ],
   "is_potentially_hazardous_asteroid" : false
 }
-
 -----------------------------------------------------
-
-Process finished with exit code 0
 ```
