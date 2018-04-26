@@ -1,19 +1,17 @@
 package org.difin.neo.services;
 
 import org.difin.neo.model.api.Neo;
-import org.difin.neo.model.api.NeoPage;
 import org.difin.neo.model.internal.NeoRetrievalResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,6 +23,7 @@ public class NeoRetrievalService {
     private final static int THREADS = 50;
 
     private NeoAPIClient neoAPIClient;
+    private static final Logger logger = Logger.getLogger(NeoRetrievalService.class.getName());
 
     @Autowired
     public NeoRetrievalService(NeoAPIClient neoAPIClient){
@@ -32,7 +31,7 @@ public class NeoRetrievalService {
         this.neoAPIClient = neoAPIClient;
     }
 
-    public NeoRetrievalResult retrieveNeos() throws ExecutionException, InterruptedException {
+    public NeoRetrievalResult retrieveNeos() {
 
         List<Neo> neoList = getNeos();
 
@@ -47,39 +46,43 @@ public class NeoRetrievalService {
         return neoRetrievalResult;
     }
 
-    private List<Neo> getNeos() throws ExecutionException, InterruptedException {
+    public List<Neo> getNeos() {
 
-        System.out.println("Starting retrieval of all NEOs");
-
-        StopWatch watch = new StopWatch();
-        watch.start();
+        logger.log(Level.INFO, "Starting retrieval of all NEOs, please wait...");
 
         int numberOfPages = neoAPIClient.getNumberOfBrowsePages();
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(THREADS);
 
-        List<Neo> neoList =
-                forkJoinPool.submit(() ->
-                    IntStream
-                        .rangeClosed(0, numberOfPages)
-                        .parallel()
-                        .mapToObj(i -> neoAPIClient.getBrowsePage(i))
-                        .flatMap(p -> p.getNear_earth_objects().stream())
-                        .collect(Collectors.toList())).get();
+        List<Neo> neoList = null;
+        try {
 
-        watch.stop();
+            neoList = forkJoinPool.submit(() ->
+                IntStream
+                    .rangeClosed(0, numberOfPages)
+                    .parallel()
+                    .mapToObj(i -> neoAPIClient.getBrowsePage(i))
+                    .flatMap(p -> p.getNear_earth_objects().stream())
+                    .collect(Collectors.toList())).get();
 
-        System.out.println("Retrieval of all NEOs completed in " + watch.getTotalTimeSeconds() + " seconds");
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "Failed getting NEO data");
+            e.printStackTrace();
+            throw new RuntimeException("Error in getNeos method");
+        } catch (ExecutionException e) {
+            logger.log(Level.SEVERE, "Failed getting NEO data");
+            e.printStackTrace();
+            throw new RuntimeException("Error in getNeos method");
+        }
+
+        logger.log(Level.INFO, "Retrieval of all NEOs completed\n");
 
         return neoList;
     }
 
-    private Optional<Neo> findLargestNeo(List<Neo> neos){
+    public Optional<Neo> findLargestNeo(List<Neo> neos){
 
-        System.out.println("\nStarting to look for the largest NEO");
-
-        StopWatch watch = new StopWatch();
-        watch.start();
+        logger.log(Level.INFO, "\nStarting to look for the largest NEO");
 
         Optional<Neo> largestNeo =
             neos
@@ -90,19 +93,14 @@ public class NeoRetrievalService {
                 .filter(n -> n.getEstimated_diameter().getKilometers().getEstimated_diameter_max() != null)
                 .collect(maxBy(Comparator.comparing(n -> n.getEstimated_diameter().getKilometers().getEstimated_diameter_max())));
 
-        watch.stop();
-
-        System.out.println("Lookup for the largest NEO completed in " + watch.getTotalTimeSeconds() + " seconds\n");
+        logger.log(Level.INFO, "Lookup for the largest NEO completed\n");
 
         return largestNeo;
     }
 
-    private Optional<Neo> findClosestToEarthNeo(List<Neo> neos) {
+    public Optional<Neo> findClosestToEarthNeo(List<Neo> neos) {
 
-        System.out.println("Starting to look for the closest to Earth NEO");
-
-        StopWatch watch = new StopWatch();
-        watch.start();
+        logger.log(Level.INFO, "Starting to look for the closest to Earth NEO");
 
         String todayDate = getTodaysDate();
 
@@ -119,9 +117,7 @@ public class NeoRetrievalService {
                 .collect(minBy(Comparator.comparing(n ->
                         n.getClose_approach_data().get(0).getMiss_distance().getAstronomical())));
 
-        watch.stop();
-
-        System.out.println("Lookup for the closest to Earth NEO completed in " + watch.getTotalTimeSeconds() + " seconds\n");
+        logger.log(Level.INFO, "Lookup for the closest to Earth NEO completed\n");
 
         return closestNeo;
     }
