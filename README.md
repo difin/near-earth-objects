@@ -10,12 +10,20 @@ This application retrieves the list of near-earth-objects (NEOs) using NASA API,
 - Maven
 - Internet access
 
+## Technologies Used
+- Java with Java 8 features (parallel streams, lambdas, java.util.Optional)
+- Spring (Dependency Injection, RestTemplate)
+- Jackson (JSON marshaling/unmarshaling)
+- Maven (Dependency Management & build)
+- JUnit, Hamcrest Matchers & Mockito for Testing
+
 ## How to Build
 ```
 mvn clean install
 ```
 
 ## How to Run Unit Tests
+Unit tests are executed as part of build command above, but can be run separately (after build) as following:
 ```
 mvn test
 ```
