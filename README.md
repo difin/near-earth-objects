@@ -22,8 +22,10 @@ mvn test
 
 ## How to Run the Application from Command Line
 
+```
 cd target
 java -jar near-earth-objects-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
 
 ## Proof that this code is functional
 
@@ -32,7 +34,7 @@ java -jar near-earth-objects-1.0-SNAPSHOT-jar-with-dependencies.jar
 - Can be built and executed on any environment which meets the system requirements (above)
 
 ## Sample output
-
+```
 Starting retrieval of all NEOs
 Retrieval of all NEOs completed in 152.147 seconds
 
@@ -42,7 +44,8 @@ Lookup for the largest NEO completed in 0.04 seconds
 Starting to look for the closest to Earth NEO
 Lookup for the closest to Earth NEO completed in 0.092 seconds
 
-### Total number of NEOs: 18658
+Total number of NEOs: 18658
+```
 
 ### Largest NEO:
 ```
@@ -234,7 +237,8 @@ Lookup for the closest to Earth NEO completed in 0.092 seconds
   } ],
   "is_potentially_hazardous_asteroid" : false
 }
-```
+
 -----------------------------------------------------
 
 Process finished with exit code 0
+```
