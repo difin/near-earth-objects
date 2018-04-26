@@ -1,6 +1,31 @@
 # near-earth-objects
 
-# Sample output
+This application retrieves the list of near-earth-objects (NEOs) using NASA API, and:
+- Displays total number of NEOs retrieved
+- Finds the largest NEO in size based on the max diameter and display NEO info in formatted JSON format
+- Finds the closest NEO (**to Earth**) for **today's date** and display NEO info in formatted JSON format
+
+## System Requirements
+- Java 8
+- Maven
+- Internet access
+
+## How to Build
+```
+mvn clean install
+```
+
+## How to Run Unit Tests
+```
+mvn test
+```
+
+## How to Run
+
+cd target
+java -jar near-earth-objects-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+## Sample output
 
 Starting retrieval of all NEOs
 Retrieval of all NEOs completed in 152.147 seconds
@@ -11,10 +36,9 @@ Lookup for the largest NEO completed in 0.04 seconds
 Starting to look for the closest to Earth NEO
 Lookup for the closest to Earth NEO completed in 0.092 seconds
 
------------------------------------------------------
-Total number of NEOs: 18658
------------------------------------------------------
-Largest NEO:
+### Total number of NEOs: 18658
+
+### Largest NEO:
 ```
 {
   "links" : {
@@ -175,7 +199,7 @@ Largest NEO:
 }
 ```
 -----------------------------------------------------
-Closest NEO:
+### Closest NEO:
 ```
 {
   "links" : {
