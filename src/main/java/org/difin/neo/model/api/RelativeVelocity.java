@@ -20,4 +20,22 @@ public class RelativeVelocity {
     public void setKilometers_per_hour(String kilometers_per_hour) {
         this.kilometers_per_hour = kilometers_per_hour;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RelativeVelocity)) return false;
+
+        RelativeVelocity that = (RelativeVelocity) o;
+
+        if (!getKilometers_per_second().equals(that.getKilometers_per_second())) return false;
+        return getKilometers_per_hour().equals(that.getKilometers_per_hour());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getKilometers_per_second().hashCode();
+        result = 31 * result + getKilometers_per_hour().hashCode();
+        return result;
+    }
 }

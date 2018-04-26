@@ -22,4 +22,22 @@ public class NeoPage {
     public void setPage(Page page) {
         this.page = page;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NeoPage)) return false;
+
+        NeoPage neoPage = (NeoPage) o;
+
+        if (!getNear_earth_objects().equals(neoPage.getNear_earth_objects())) return false;
+        return getPage().equals(neoPage.getPage());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getNear_earth_objects().hashCode();
+        result = 31 * result + getPage().hashCode();
+        return result;
+    }
 }

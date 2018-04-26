@@ -1,12 +1,14 @@
 package org.difin.neo.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.difin.neo.model.api.Neo;
+import org.difin.neo.model.api.NeoPage;
 import org.difin.neo.model.internal.NeoRetrievalResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -21,14 +23,16 @@ import static java.util.stream.Collectors.*;
 public class NeoRetrievalService {
 
     private final static int THREADS = 50;
-
-    private NeoAPIClient neoAPIClient;
     private static final Logger logger = Logger.getLogger(NeoRetrievalService.class.getName());
 
+    private NeoAPIClient neoAPIClient;
+    private DateRetrievalService dateRetrievalService;
+
     @Autowired
-    public NeoRetrievalService(NeoAPIClient neoAPIClient){
+    public NeoRetrievalService(NeoAPIClient neoAPIClient, DateRetrievalService dateRetrievalService){
 
         this.neoAPIClient = neoAPIClient;
+        this.dateRetrievalService = dateRetrievalService;
     }
 
     public NeoRetrievalResult retrieveNeos() {
@@ -66,13 +70,11 @@ public class NeoRetrievalService {
                     .collect(Collectors.toList())).get();
 
         } catch (InterruptedException e) {
-            logger.log(Level.SEVERE, "Failed getting NEO data");
-            e.printStackTrace();
-            throw new RuntimeException("Error in getNeos method");
+            logger.log(Level.SEVERE, "Failed getting NEO data", e);
+            throw new RuntimeException(e.getMessage());
         } catch (ExecutionException e) {
-            logger.log(Level.SEVERE, "Failed getting NEO data");
-            e.printStackTrace();
-            throw new RuntimeException("Error in getNeos method");
+            logger.log(Level.SEVERE, "Failed getting NEO data", e);
+            throw new RuntimeException(e.getMessage());
         }
 
         logger.log(Level.INFO, "Retrieval of all NEOs completed\n");
@@ -102,10 +104,11 @@ public class NeoRetrievalService {
 
         logger.log(Level.INFO, "Starting to look for the closest to Earth NEO");
 
-        String todayDate = getTodaysDate();
+        List<Neo> neoListCopy = deepCopy(neos);
+        String todayDate = dateRetrievalService.getTodaysDate();
 
         Optional<Neo> closestNeo =
-            neos
+            neoListCopy
                 .stream()
                 .parallel()
                 .map(n -> {
@@ -122,10 +125,23 @@ public class NeoRetrievalService {
         return closestNeo;
     }
 
-    private String getTodaysDate(){
+    private List<Neo> deepCopy(List<Neo> originalList){
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date today = Calendar.getInstance().getTime();
-        return dateFormat.format(today);
+        NeoPage neoListHolder = new NeoPage();
+        neoListHolder.setNear_earth_objects(originalList);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            String serialized = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(neoListHolder);
+            return objectMapper.readValue(serialized, NeoPage.class).getNear_earth_objects();
+
+        } catch (JsonProcessingException e) {
+            logger.log(Level.SEVERE, "Error serializing an object", e);
+            throw new RuntimeException(e.getMessage());
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error deserializing an object", e);
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

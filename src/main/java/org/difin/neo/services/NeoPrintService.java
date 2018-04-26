@@ -20,10 +20,6 @@ public class NeoPrintService {
 
         System.out.println("Largest NEO:");
 
-        String largestNeoJson = objectMapper
-                .writerWithDefaultPrettyPrinter()
-                .writeValueAsString(result.getLargestNeo());
-
         if (result.getLargestNeo().isPresent()){
             System.out.println(objectWriter.writeValueAsString(result.getLargestNeo().get()));
         }

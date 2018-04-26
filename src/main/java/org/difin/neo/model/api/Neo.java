@@ -76,4 +76,35 @@ public class Neo {
     public void setIs_potentially_hazardous_asteroid(Boolean is_potentially_hazardous_asteroid) {
         this.is_potentially_hazardous_asteroid = is_potentially_hazardous_asteroid;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Neo)) return false;
+
+        Neo neo = (Neo) o;
+
+        if (!getLinks().equals(neo.getLinks())) return false;
+        if (!getNeo_reference_id().equals(neo.getNeo_reference_id())) return false;
+        if (!getName().equals(neo.getName())) return false;
+        if (!getNasa_jpl_url().equals(neo.getNasa_jpl_url())) return false;
+        if (!getAbsolute_magnitude_h().equals(neo.getAbsolute_magnitude_h())) return false;
+        if (!getEstimated_diameter().equals(neo.getEstimated_diameter())) return false;
+        if (getClose_approach_data() != null ? !getClose_approach_data().equals(neo.getClose_approach_data()) : neo.getClose_approach_data() != null)
+            return false;
+        return getIs_potentially_hazardous_asteroid().equals(neo.getIs_potentially_hazardous_asteroid());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getLinks().hashCode();
+        result = 31 * result + getNeo_reference_id().hashCode();
+        result = 31 * result + getName().hashCode();
+        result = 31 * result + getNasa_jpl_url().hashCode();
+        result = 31 * result + getAbsolute_magnitude_h().hashCode();
+        result = 31 * result + getEstimated_diameter().hashCode();
+        result = 31 * result + (getClose_approach_data() != null ? getClose_approach_data().hashCode() : 0);
+        result = 31 * result + getIs_potentially_hazardous_asteroid().hashCode();
+        return result;
+    }
 }

@@ -38,4 +38,26 @@ public class CloseApproachData {
     public void setOrbiting_body(String orbiting_body) {
         this.orbiting_body = orbiting_body;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CloseApproachData)) return false;
+
+        CloseApproachData that = (CloseApproachData) o;
+
+        if (!getClose_approach_date().equals(that.getClose_approach_date())) return false;
+        if (!getMiss_distance().equals(that.getMiss_distance())) return false;
+        if (!getRelative_velocity().equals(that.getRelative_velocity())) return false;
+        return getOrbiting_body().equals(that.getOrbiting_body());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getClose_approach_date().hashCode();
+        result = 31 * result + getMiss_distance().hashCode();
+        result = 31 * result + getRelative_velocity().hashCode();
+        result = 31 * result + getOrbiting_body().hashCode();
+        return result;
+    }
 }
