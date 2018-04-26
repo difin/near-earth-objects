@@ -2,8 +2,8 @@
 
 This application retrieves the list of near-earth-objects (NEOs) using NASA API, and:
 - Displays total number of NEOs retrieved
-- Finds the largest NEO in size **based on the max diameter** and display its in formatted JSON format
-- Finds the closest **to Earth** NEO for **today's date** and display its info in formatted JSON format
+- Finds the largest NEO in size **based on the max diameter** and display its in a 'pretty-print' JSON format
+- Finds the closest **to Earth** NEO for **today's date** and display its info in 'pretty-print' JSON format
 
 ## System Requirements
 - Java 8
