@@ -84,7 +84,7 @@ public class NeoAPIClient {
             counter++;
             int index = ThreadLocalRandom.current().nextInt(0, apiKeys.size());
 
-            System.out.println("API Key number = " + index + ";\tAPI calls count = " + counter + ";\tRemaining API Keys = " + apiKeys.size());
+            System.out.println("API Key number = " + index + "\tAPI calls count = " + counter + "\tRemaining API Keys = " + apiKeys.size());
 
             return apiKeys.get(index);
         }
