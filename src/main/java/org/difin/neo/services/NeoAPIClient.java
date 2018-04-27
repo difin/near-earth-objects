@@ -18,7 +18,7 @@ public class NeoAPIClient {
 
     private static final String NEO_BROWSE_URL = "https://api.nasa.gov/neo/rest/v1/neo/browse";
     private static List<String> apiKeys;
-    private static int counter = 0;
+    private static int apiCallsCounter = 0;
 
     private RestTemplate restTemplate;
 
@@ -48,8 +48,8 @@ public class NeoAPIClient {
                 ));
     }
 
-    public NeoAPIClient(){
-        restTemplate = new RestTemplate();;
+    public NeoAPIClient() {
+        restTemplate = new RestTemplate();
     }
 
     public NeoPage getBrowsePage(int page) {
@@ -57,15 +57,15 @@ public class NeoAPIClient {
         String apiKey = getRandomApiKey();
         String url = NEO_BROWSE_URL + "?api_key=" + apiKey + "&page=" + page;
 
-        try{
+        try {
             return restTemplate.getForObject(url, NeoPage.class);
 
-        } catch(HttpClientErrorException e){ // Rate limit exceeded for some API Key (Too many calls - status 429)
+        } catch (HttpClientErrorException e) { // Rate limit exceeded for some API Key (Too many calls - status 429)
 
             removeApiKey(apiKey);
             return getBrowsePage(page);
 
-        } catch (ResourceAccessException e){ // May happen because of timeout
+        } catch (ResourceAccessException e) { // May happen because of timeout
 
             pauseApiCalls(1000);
             return getBrowsePage(page);
@@ -77,42 +77,34 @@ public class NeoAPIClient {
         return getBrowsePage(0).getPage().getTotal_pages();
     }
 
-    private String getRandomApiKey(){
+    private synchronized String getRandomApiKey() {
 
-        synchronized (NeoAPIClient.class){
+        apiCallsCounter++;
+        int index = ThreadLocalRandom.current().nextInt(0, apiKeys.size());
 
-            counter++;
-            int index = ThreadLocalRandom.current().nextInt(0, apiKeys.size());
+        System.out.println("API Key number = " + index + "\tAPI calls count = " + apiCallsCounter + "\tRemaining API Keys = " + apiKeys.size());
 
-            System.out.println("API Key number = " + index + "\tAPI calls count = " + counter + "\tRemaining API Keys = " + apiKeys.size());
-
-            return apiKeys.get(index);
-        }
+        return apiKeys.get(index);
     }
 
-    private void removeApiKey(String apiKey){
+    private synchronized void removeApiKey(String apiKey) {
 
-        synchronized (NeoAPIClient.class){
+        apiKeys.remove(apiKey);
+        System.out.println("API Key removed!");
 
-            apiKeys.remove(apiKey);
-            System.out.println("API Key removed!");
-
-            if (apiKey.isEmpty()){
-                throw new RuntimeException("No more API Keys left, stopping.");
-            }
-
-            pauseApiCalls(5000);
+        if (apiKey.isEmpty()) {
+            throw new RuntimeException("No more API Keys left, stopping.");
         }
+
+        pauseApiCalls(5000);
     }
 
-    private void pauseApiCalls(int milliseconds){
+    private synchronized void pauseApiCalls(int milliseconds) {
 
-        synchronized (NeoAPIClient.class){
-            try {
-                sleep(milliseconds);
-            } catch (InterruptedException e1) {
-                throw new RuntimeException(e1);
-            }
+        try {
+            sleep(milliseconds);
+        } catch (InterruptedException e1) {
+            throw new RuntimeException(e1);
         }
     }
 }
