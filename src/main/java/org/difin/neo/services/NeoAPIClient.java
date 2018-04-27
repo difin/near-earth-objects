@@ -60,29 +60,14 @@ public class NeoAPIClient {
         try{
             return restTemplate.getForObject(url, NeoPage.class);
 
-        } catch(HttpClientErrorException e){
+        } catch(HttpClientErrorException e){ // Rate limit exceeded for some API Key (Too many calls - status 429)
 
-            synchronized (apiKeys){
-                apiKeys.remove(apiKey);
-
-                try {
-                    sleep(5000);
-                } catch (InterruptedException e1) {
-                    throw new RuntimeException(e1);
-                }
-
-                System.out.println("API Key removed");
-            }
-
+            removeApiKey(apiKey);
             return getBrowsePage(page);
-        } catch (ResourceAccessException e){
 
-            try {
-                sleep(1000);
-            } catch (InterruptedException e1) {
-                throw new RuntimeException(e1);
-            }
+        } catch (ResourceAccessException e){ // May happen because of timeout
 
+            pauseApiCalls(1000);
             return getBrowsePage(page);
         }
     }
@@ -94,7 +79,7 @@ public class NeoAPIClient {
 
     private String getRandomApiKey(){
 
-        synchronized (apiKeys){
+        synchronized (NeoAPIClient.class){
 
             counter++;
             int index = ThreadLocalRandom.current().nextInt(0, apiKeys.size());
@@ -102,6 +87,32 @@ public class NeoAPIClient {
             System.out.println("API Key number = " + index + ";\tAPI calls count = " + counter + ";\tRemaining API Keys = " + apiKeys.size());
 
             return apiKeys.get(index);
+        }
+    }
+
+    private void removeApiKey(String apiKey){
+
+        synchronized (NeoAPIClient.class){
+
+            apiKeys.remove(apiKey);
+            System.out.println("API Key removed!");
+
+            if (apiKey.isEmpty()){
+                throw new RuntimeException("No more API Keys left, stopping.");
+            }
+
+            pauseApiCalls(5000);
+        }
+    }
+
+    private void pauseApiCalls(int milliseconds){
+
+        synchronized (NeoAPIClient.class){
+            try {
+                sleep(milliseconds);
+            } catch (InterruptedException e1) {
+                throw new RuntimeException(e1);
+            }
         }
     }
 }
