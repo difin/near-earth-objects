@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.*;
 @Service
 public class NeoRetrievalService {
 
-    private final static int THREADS = 50;
     private static final Logger logger = Logger.getLogger(NeoRetrievalService.class.getName());
 
     private NeoAPIClient neoAPIClient;
@@ -54,8 +53,6 @@ public class NeoRetrievalService {
         logger.log(Level.INFO, "Starting retrieval of all NEOs, please wait...");
 
         int numberOfPages = neoAPIClient.getNumberOfBrowsePages();
-
-        ForkJoinPool forkJoinPool = new ForkJoinPool(THREADS);
 
         List<Neo> neoList =
                 IntStream
